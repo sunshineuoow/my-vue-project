@@ -2,18 +2,18 @@
 	<div>
 		<div class="app-header">
 			<div class="app-header-inner">
-				<!-- <router-link :to="{path:'/'}"> -->
+				<router-link :to="{path:'/'}">
 					<img src="../assets/logo.png">
-				<!-- </router-link> -->
+				</router-link>
 				<div class="header-nav">
 					<ul class="nav-list">
 						<li>{{ username }}</li>
 						<li v-if="username !== ''" class="nav-pile">|</li>
-						<li v-if="username !== ''">退出</li>
+						<li v-if="username !== ''" @click="quit">退出</li>
 						<li v-if="username === ''" @click="logClick">登录</li>
 						<li class="nav-pile">|</li>
-						<li>注册</li>
-						<li class="nav-pile">|</li>
+						<li v-if="username === ''" @click="regClick">注册</li>
+						<li v-if="username === ''" class="nav-pile">|</li>
 						<li @click="aboutClick">关于</li>
 					</ul>
 				</div>
@@ -35,23 +35,30 @@
 		<my-dialog :is-show="isShowLogDialog" @on-close="closeDialog('isShowLogDialog')">
 			<log-form @has-log="onSuccessLog"></log-form>
 		</my-dialog>
+
+		<my-dialog :is-show="isShowRegDialog" @on-close="closeDialog('isShowRegDialog')">
+			<reg-form @has-reg="onSuccessReg"></reg-form>
+		</my-dialog>
 	</div>
 </template>
 
 <script>
 	import Dialog from './base/dialog'
 	import LogForm from './logForm'
+	import RegForm from './regForm'
 
 	export default{
 		name: 'layout',
 		components: {
 			MyDialog: Dialog,
 			LogForm,
+			RegForm
 		},
 		data() {
 			return {
 				isShowAboutDialog: false,
 				isShowLogDialog: false,
+				isShowRegDialog: false,
 				username: ''
 			}
 		},
@@ -62,12 +69,23 @@
 			logClick () {
 				this.isShowLogDialog = true;
 			},
+			regClick () {
+				this.isShowRegDialog = true;
+			},
 			closeDialog (attr) {
 				this[attr] = false
 			},
 			onSuccessLog (data) {
 				this.closeDialog('isShowLogDialog');
 				this.username = data.username
+			},
+			onSuccessReg () {
+				this.closeDialog('isShowRegDialog');
+			},
+			quit() {
+				if(confirm('确认退出吗?')){
+					this.username = '';
+				}
 			}
 		}
 	}
